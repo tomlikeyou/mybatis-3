@@ -41,7 +41,9 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
       | MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC;
   private static final Constructor<Lookup> lookupConstructor;
   private static final Method privateLookupInMethod;
+  /*defaultSqlSession*/
   private final SqlSession sqlSession;
+  /*接口的class对象*/
   private final Class<T> mapperInterface;
   private final Map<Method, MapperMethodInvoker> methodCache;
 
@@ -93,6 +95,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   private MapperMethodInvoker cachedInvoker(Method method) throws Throwable {
     try {
       return MapUtil.computeIfAbsent(methodCache, method, m -> {
+        /*条件成立：说明接口方法是默认方法*/
         if (m.isDefault()) {
           try {
             if (privateLookupInMethod == null) {
@@ -105,6 +108,12 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
             throw new RuntimeException(e);
           }
         } else {
+          /*一般走这里*/
+          /*
+          * 参数1：接口class对象
+          * 参数2：接口的方法
+          * 参数3：Configuration对象
+          * */
           return new PlainMethodInvoker(new MapperMethod(mapperInterface, method, sqlSession.getConfiguration()));
         }
       });

@@ -117,6 +117,7 @@ public class MapperAnnotationBuilder {
     if (!configuration.isResourceLoaded(resource)) {
       loadXmlResource();
       configuration.addLoadedResource(resource);
+      /*绑定mapper配置文件的命名空间*/
       assistant.setCurrentNamespace(type.getName());
       parseCache();
       parseCacheRef();

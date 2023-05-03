@@ -94,7 +94,9 @@ public class XMLMapperBuilder extends BaseBuilder {
     /*如果没有加载该路径的映射文件，则加载*/
     if (!configuration.isResourceLoaded(resource)) {
       configurationElement(parser.evalNode("/mapper"));
+      /*将当前mapper配置文件的命名空间信息保存到Configuration对象的set集合内*/
       configuration.addLoadedResource(resource);
+      /*将当前mapper的class对象通过mapperRegistry添加到map中，key：接口的class对象，value：MapperProxyFactory*/
       bindMapperForNamespace();
     }
 
@@ -109,10 +111,12 @@ public class XMLMapperBuilder extends BaseBuilder {
   /*mapper节点代表一个mapper文件*/
   private void configurationElement(XNode context) {
     try {
+      /*获取mapper节点的namespace属性*/
       String namespace = context.getStringAttribute("namespace");
       if (namespace == null || namespace.isEmpty()) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
+      /*绑定mapper的命名空间*/
       builderAssistant.setCurrentNamespace(namespace);
       cacheRefElement(context.evalNode("cache-ref"));
       cacheElement(context.evalNode("cache"));
@@ -423,10 +427,12 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private void bindMapperForNamespace() {
+    /*mapper配置文件的命名空间属性，实际上是mapper接口的全路径地址*/
     String namespace = builderAssistant.getCurrentNamespace();
     if (namespace != null) {
       Class<?> boundType = null;
       try {
+        /*class.forName*/
         boundType = Resources.classForName(namespace);
       } catch (ClassNotFoundException e) {
         // ignore, bound type is not required

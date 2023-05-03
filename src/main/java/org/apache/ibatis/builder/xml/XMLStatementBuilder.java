@@ -56,12 +56,14 @@ public class XMLStatementBuilder extends BaseBuilder {
   public void parseStatementNode() {
     /*获得增删改查节点的id值*/
     String id = context.getStringAttribute("id");
+    /*从标签里获取databaseId属性*/
     String databaseId = context.getStringAttribute("databaseId");
 
     if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
       return;
     }
 
+    /*获取标签名字*/
     String nodeName = context.getNode().getNodeName();
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;

@@ -397,7 +397,7 @@ public class XMLConfigBuilder extends BaseBuilder {
           if (resource != null && url == null && mapperClass == null) {
             ErrorContext.instance().resource(resource);
             try(InputStream inputStream = Resources.getResourceAsStream(resource)) {
-              /*实例化xmlmapperbuilder类*/
+              /*实例化xmlMapperBuilder类*/
               XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
               /*解析核心映射文件*/
               mapperParser.parse();

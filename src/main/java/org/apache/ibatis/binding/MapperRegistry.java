@@ -33,7 +33,9 @@ import org.apache.ibatis.session.SqlSession;
  */
 public class MapperRegistry {
 
+  /*核心的Configuration对象*/
   private final Configuration config;
+  /*key:接口的class对象，value：mapper代理工厂*/
   private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
 
   public MapperRegistry(Configuration config) {
@@ -80,6 +82,10 @@ public class MapperRegistry {
         // It's important that the type is added before the parser is run
         // otherwise the binding may automatically be attempted by the
         // mapper parser. If the type is already known, it won't try.
+        /*
+        * 参数1：configuration对象
+        * 参数2：具体接口class对象
+        * */
         MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
         parser.parse();
         loadCompleted = true;

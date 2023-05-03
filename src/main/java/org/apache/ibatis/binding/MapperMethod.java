@@ -49,6 +49,11 @@ public class MapperMethod {
   private final SqlCommand command;
   private final MethodSignature method;
 
+  /*
+   * 参数1：接口class对象
+   * 参数2：接口的方法
+   * 参数3：Configuration对象
+   * */
   public MapperMethod(Class<?> mapperInterface, Method method, Configuration config) {
     this.command = new SqlCommand(config, mapperInterface, method);
     this.method = new MethodSignature(config, mapperInterface, method);
