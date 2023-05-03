@@ -673,8 +673,10 @@ public class Configuration {
     } else if (ExecutorType.REUSE == executorType) {
       executor = new ReuseExecutor(this, transaction);
     } else {
+      /*默认是simple类型的执行器*/
       executor = new SimpleExecutor(this, transaction);
     }
+    /*如果开启了二级缓存，executor将被CachingExecutor封装一层*/
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }
@@ -834,6 +836,7 @@ public class Configuration {
   }
 
   public void addMappers(String packageName) {
+    /*由MapperRegistry这个类来扫描包下面所有的mapper接口 添加到这个类当中*/
     mapperRegistry.addMappers(packageName);
   }
 

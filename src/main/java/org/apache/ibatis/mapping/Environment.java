@@ -65,7 +65,9 @@ public final class Environment {
       return this.id;
     }
 
+    /*id 为environment的id*/
     public Environment build() {
+      /*初始化Environment，传入解析得到的JdbcTransactionFactory 和datasource*/
       return new Environment(this.id, this.transactionFactory, this.dataSource);
     }
 

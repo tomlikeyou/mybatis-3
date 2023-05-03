@@ -122,6 +122,13 @@ public class XPathParser {
     this.document = createDocument(new InputSource(reader));
   }
 
+  /**
+   *
+   * @param inputStream
+   * @param validation      true
+   * @param variables       null
+   * @param entityResolver  XMLMapperEntityResolver
+   */
   public XPathParser(InputStream inputStream, boolean validation, Properties variables, EntityResolver entityResolver) {
     commonConstructor(validation, variables, entityResolver);
     this.document = createDocument(new InputSource(inputStream));

@@ -96,6 +96,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
     parsed = true;
+    /*进行解析*/
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
   }
@@ -107,16 +108,20 @@ public class XMLConfigBuilder extends BaseBuilder {
       Properties settings = settingsAsProperties(root.evalNode("settings"));
       loadCustomVfs(settings);
       loadCustomLogImpl(settings);
+      /*解析类型别名将数据放到configuration*/
       typeAliasesElement(root.evalNode("typeAliases"));
+      /*解析plugins节点*/
       pluginElement(root.evalNode("plugins"));
       objectFactoryElement(root.evalNode("objectFactory"));
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
       settingsElement(settings);
+      /*解析environments节点 最终将数据封装到configuration对象中*/
       // read it after objectFactory and objectWrapperFactory issue #631
       environmentsElement(root.evalNode("environments"));
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
       typeHandlerElement(root.evalNode("typeHandlers"));
+      /*解析mapper映射文件*/
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -162,15 +167,18 @@ public class XMLConfigBuilder extends BaseBuilder {
       for (XNode child : parent.getChildren()) {
         if ("package".equals(child.getName())) {
           String typeAliasPackage = child.getStringAttribute("name");
+          /*可以改成 this.typeAliasRegistry.registerAliases(typeAliasPackage);*/
           configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
         } else {
           String alias = child.getStringAttribute("alias");
           String type = child.getStringAttribute("type");
           try {
+            /*根据全路径生成class*/
             Class<?> clazz = Resources.classForName(type);
             if (alias == null) {
               typeAliasRegistry.registerAlias(clazz);
             } else {
+              /*该方法会将类名与该类的class作为key-value存入TypeAliasRegistry 的map中*/
               typeAliasRegistry.registerAlias(alias, clazz);
             }
           } catch (ClassNotFoundException e) {
@@ -275,14 +283,21 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void environmentsElement(XNode context) throws Exception {
     if (context != null) {
       if (environment == null) {
+        /*得到environments节点的default值*/
         environment = context.getStringAttribute("default");
       }
+      /*遍历每一个environment节点*/
       for (XNode child : context.getChildren()) {
         String id = child.getStringAttribute("id");
+        /*判断default的值是否与某一个environment节点的id值是否相等*/
         if (isSpecifiedEnvironment(id)) {
+          /*解析environment节点的transmanager和datasource节点 JdbcTransactionFactory*/
           TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
+          /*PooledDataSourceFactory*/
           DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
+          /*pooledDataSource*/
           DataSource dataSource = dsFactory.getDataSource();
+
           Environment.Builder environmentBuilder = new Environment.Builder(id)
               .transactionFactory(txFactory)
               .dataSource(dataSource);
@@ -361,29 +376,41 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   *
+   * @param parent:mappers节点
+   * @throws Exception
+   */
   private void mapperElement(XNode parent) throws Exception {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
+        /*如果是package节点*/
         if ("package".equals(child.getName())) {
+          /*得到package的name属性值(包名)*/
           String mapperPackage = child.getStringAttribute("name");
           configuration.addMappers(mapperPackage);
         } else {
           String resource = child.getStringAttribute("resource");
           String url = child.getStringAttribute("url");
           String mapperClass = child.getStringAttribute("class");
+          /*resource 配置的方式*/
           if (resource != null && url == null && mapperClass == null) {
             ErrorContext.instance().resource(resource);
             try(InputStream inputStream = Resources.getResourceAsStream(resource)) {
+              /*实例化xmlmapperbuilder类*/
               XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+              /*解析核心映射文件*/
               mapperParser.parse();
             }
           } else if (resource == null && url != null && mapperClass == null) {
+            /*url配置的方式*/
             ErrorContext.instance().resource(url);
             try(InputStream inputStream = Resources.getUrlAsStream(url)){
               XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
               mapperParser.parse();
             }
           } else if (resource == null && url == null && mapperClass != null) {
+            /*class配置的方式*/
             Class<?> mapperInterface = Resources.classForName(mapperClass);
             configuration.addMapper(mapperInterface);
           } else {

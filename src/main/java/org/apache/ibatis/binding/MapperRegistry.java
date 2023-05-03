@@ -40,12 +40,22 @@ public class MapperRegistry {
     this.config = config;
   }
 
+
+  /**
+   *
+   * @param type
+   * @param sqlSession  defaultSqlSession
+   * @param <T>
+   * @return
+   */
   @SuppressWarnings("unchecked")
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+    /*根据mapper接口class作为key 获取到MapperProxyFactory对象*/
     final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
     if (mapperProxyFactory == null) {
       throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
     }
+    /*通过使用动态代理生成实例*/
     try {
       return mapperProxyFactory.newInstance(sqlSession);
     } catch (Exception e) {
@@ -58,7 +68,9 @@ public class MapperRegistry {
   }
 
   public <T> void addMapper(Class<T> type) {
+    /*先判断该class对象是不是接口*/
     if (type.isInterface()) {
+      /*再判断knownMappers这个map集合中是否已经包含该mapper接口的class key*/
       if (hasMapper(type)) {
         throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
       }
@@ -101,6 +113,7 @@ public class MapperRegistry {
   public void addMappers(String packageName, Class<?> superType) {
     ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
     resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
+    /*根据包名得到该包名下面所有的mapper接口的class对象*/
     Set<Class<? extends Class<?>>> mapperSet = resolverUtil.getClasses();
     for (Class<?> mapperClass : mapperSet) {
       addMapper(mapperClass);

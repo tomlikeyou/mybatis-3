@@ -54,6 +54,7 @@ public class XMLStatementBuilder extends BaseBuilder {
   }
 
   public void parseStatementNode() {
+    /*获得增删改查节点的id值*/
     String id = context.getStringAttribute("id");
     String databaseId = context.getStringAttribute("databaseId");
 
