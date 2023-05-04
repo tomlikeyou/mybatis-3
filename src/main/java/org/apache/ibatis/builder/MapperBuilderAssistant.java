@@ -267,7 +267,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
       throw new IncompleteElementException("Cache-ref not yet resolved");
     }
 
+    /*id:mapper接口全路径地址+方法名*/
     id = applyCurrentNamespace(id, false);
+    /*标签是否是查询标签*/
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
 
     MappedStatement.Builder statementBuilder = new MappedStatement.Builder(configuration, id, sqlSource, sqlCommandType)

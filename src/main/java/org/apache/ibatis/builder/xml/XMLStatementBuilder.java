@@ -39,6 +39,7 @@ import org.apache.ibatis.session.Configuration;
 public class XMLStatementBuilder extends BaseBuilder {
 
   private final MapperBuilderAssistant builderAssistant;
+  /*增删改查标签*/
   private final XNode context;
   private final String requiredDatabaseId;
 
@@ -54,7 +55,7 @@ public class XMLStatementBuilder extends BaseBuilder {
   }
 
   public void parseStatementNode() {
-    /*获得增删改查节点的id值*/
+    /*获得增删改查节点的id值：具体mapper接口的方法名*/
     String id = context.getStringAttribute("id");
     /*从标签里获取databaseId属性*/
     String databaseId = context.getStringAttribute("databaseId");
